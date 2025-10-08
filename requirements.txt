@@ -1,19 +1,10 @@
-# Core
 streamlit==1.38.0
 numpy==1.26.4
-pillow==10.3.0
-
-# YOLOv8 lightweight
-ultralytics==8.2.50
-
-# OpenCV (headless for Streamlit)
+pillow==10.2.0
 opencv-python-headless==4.9.0.80
-
-# PyTorch CPU-only (small build that always works on Streamlit Cloud)
---extra-index-url https://download.pytorch.org/whl/cpu
+ultralytics==8.2.50
 torch==2.2.0+cpu
 torchvision==0.17.0+cpu
 torchaudio==2.2.0+cpu
-
-# For Word report
+--extra-index-url https://download.pytorch.org/whl/cpu
 python-docx==1.1.0
