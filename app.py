@@ -3,7 +3,11 @@ import streamlit as st
 from infer import detect_cracks
 from report import create_report
 import os
-
+try:
+    import cv2
+except ModuleNotFoundError:
+    os.system("pip install opencv-python-headless==4.10.0.84")
+    import cv2
 st.set_page_config(page_title="Crack Detection Prototype", page_icon="🧱", layout="centered")
 
 st.title("🧱 Building Crack Detection Prototype (YOLOv8)")
