@@ -1,4 +1,6 @@
 # app.py
+import os
+os.system("pip install --quiet opencv-python-headless==4.9.0.80 ultralytics==8.2.50 torch==2.2.0+cpu torchvision==0.17.0+cpu torchaudio==2.2.0+cpu")
 import streamlit as st
 from infer import detect_cracks
 from report import create_report
