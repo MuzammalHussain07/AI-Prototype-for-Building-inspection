@@ -1,38 +1,33 @@
-import os
-import streamlit as st
-from infer import detect_cracks
-from report import generate_word_report
+import gradio as gr
+from ultralytics import YOLO
+import numpy as np
 from PIL import Image
-import tempfile
 
-# Ensure dependencies
-os.system("pip install --quiet ultralytics==8.2.50 opencv-python-headless==4.9.0.80 torch==2.3.0 python-docx pillow numpy")
+# Load your trained YOLO model
+model = YOLO("your_model.pt")  # <-- replace with your model file name
 
-st.set_page_config(page_title="AI Building Inspection Tool", layout="wide")
-st.title("🏗️ AI Prototype for Building Inspection")
-st.write("Automatically detect cracks, spalling, and dampness in building inspection images.")
+# Function to run crack detection
+def detect_crack(image):
+    # Convert PIL image to numpy array if needed
+    if isinstance(image, Image.Image):
+        image = np.array(image)
+        
+    # Run prediction
+    results = model.predict(image)
+    
+    # Get result image with detections
+    result_image = results[0].plot()  # returns image with boxes drawn
+    
+    return result_image
 
-uploaded_files = st.file_uploader("Upload one or more images", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
+# Gradio interface
+iface = gr.Interface(
+    fn=detect_crack,
+    inputs=gr.Image(type="numpy"),
+    outputs=gr.Image(),
+    title="Building Crack Detection",
+    description="Upload an image of a wall or structure to detect cracks automatically."
+)
 
-if uploaded_files:
-    results = []
-    temp_dir = tempfile.mkdtemp()
-
-    for file in uploaded_files:
-        image_path = os.path.join(temp_dir, file.name)
-        image = Image.open(file)
-        image.save(image_path)
-
-        with st.spinner(f"Analyzing {file.name}..."):
-            output_image, detected_data = detect_cracks(image_path)
-            results.append(detected_data)
-
-        st.image(output_image, caption=f"Processed: {file.name}", use_container_width=True)
-
-    st.success("✅ Analysis complete!")
-    st.download_button(
-        label="📄 Download Word Report",
-        data=generate_word_report(results),
-        file_name="Inspection_Report.docx",
-        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    )
+# Launch the app (Hugging Face does this automatically)
+iface.launch()
